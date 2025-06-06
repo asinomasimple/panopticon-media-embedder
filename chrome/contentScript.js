@@ -1,4 +1,11 @@
-console.log('[QBN Embedder] Content script loaded.');
+// Add embedder style
+const style = document.createElement('style');
+style.textContent = `
+  .panopticon-embedder-frame {
+    border: 2px solid #E685D5 !important;
+  }
+`;
+document.head.appendChild(style);
 
 // Initial run in case some content is already loaded
 processLinks(document);
@@ -24,13 +31,14 @@ observer.observe(document.body, {
  */
 function processLinks(root) {
   const links = [...root.querySelectorAll('a[href]')];
-  console.log(`[QBN Embedder] Found ${links.length} links`);
+  console.log(`[Panopticon Embedder] Found ${links.length} links`);
 
   for (const link of links) {
-    console.log('[QBN Embedder] Checking link:', link.href);
+    console.log('[Panopticon Embedder] Checking link:', link.href);
     if (handleInstagramLinks(link)) continue;
     if (handleWebpLinks(link)) continue;
     if (handleMp4Links(link)) continue;
+    if (handleYoutubeShorts(link)) continue;
   }
 }
 
@@ -44,8 +52,9 @@ function handleInstagramLinks(link) {
   embed.height = "480";
   embed.style.border = "none";
   embed.loading = "lazy";
+  embed.className = 'panopticon-embedder-frame';
 
-  console.log('[QBN Embedder] Embedding Instagram:', url);
+  console.log('[Panopticon Embedder] Embedding Instagram:', url);
   link.replaceWith(embed);
   return true;
 }
@@ -59,8 +68,9 @@ function handleWebpLinks(link) {
   img.style.maxWidth = '100%';
   img.style.display = 'block';
   img.style.margin = '1em 0';
+  img.className = 'panopticon-embedder-frame';
 
-  console.log('[QBN Embedder] Embedding WebP:', url);
+  console.log('[Panopticon Embedder] Embedding WebP:', url);
   link.replaceWith(img);
   return true;
 }
@@ -75,8 +85,31 @@ function handleMp4Links(link) {
   video.style.maxWidth = '100%';
   video.style.display = 'block';
   video.style.margin = '1em 0';
+  video.className = 'panopticon-embedder-frame';
 
-  console.log('[QBN Embedder] Embedding MP4:', url);
+  console.log('[Panopticon Embedder] Embedding MP4:', url);
   link.replaceWith(video);
+  return true;
+}
+
+function handleYoutubeShorts(link) {
+  const url = link.href;
+  const match = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
+  if (!match) return false;
+
+  const videoId = match[1];
+  const embed = document.createElement('iframe');
+  embed.src = `https://www.youtube.com/embed/${videoId}`;
+  embed.width = "560";
+  embed.height = "315";
+  embed.frameBorder = "0";
+  embed.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  embed.allowFullscreen = true;
+  embed.style.display = 'block';
+  embed.style.margin = '1em 0';
+  embed.className = 'panopticon-embedder-frame';
+
+  console.log('[Panopticon Embedder] Embedding YouTube Shorts:', url);
+  link.replaceWith(embed);
   return true;
 }
