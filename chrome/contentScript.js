@@ -35,8 +35,16 @@ function processLinks(root) {
 
   for (const link of links) {
     console.log('[Panopticon Embedder] Checking link:', link.href);
+
+    // Skip links inside .notes sections
+    if (link.closest('.notes')) {
+      console.log('[Panopticon Embedder] Skipping link in .notes section:', link.href);
+      continue;
+    }
+
     if (handleInstagramLinks(link)) continue;
     if (handleWebpLinks(link)) continue;
+    if (handleAvifLinks(link)) continue;
     if (handleMp4Links(link)) continue;
     if (handleYoutubeShorts(link)) continue;
   }
@@ -89,6 +97,22 @@ function handleMp4Links(link) {
 
   console.log('[Panopticon Embedder] Embedding MP4:', url);
   link.replaceWith(video);
+  return true;
+}
+
+function handleAvifLinks(link) {
+  const url = link.href;
+  if (!url.endsWith('.avif')) return false;
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.style.maxWidth = '100%';
+  img.style.display = 'block';
+  img.style.margin = '1em 0';
+  img.className = 'panopticon-embedder-frame';
+
+  console.log('[Panopticon Embedder] Embedding AVIF:', url);
+  link.replaceWith(img);
   return true;
 }
 

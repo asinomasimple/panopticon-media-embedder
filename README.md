@@ -3,6 +3,7 @@
 A simple browser extension that enhances QBN.com threads by embedding media links like:
 - Instagram posts
 - `.webp` images
+- `.avif` images
 - `.mp4` videos
 - YouTube shorts
 
@@ -14,6 +15,7 @@ This is a lightweight, personal tool designed for the QBN community. It automati
 
 - Embeds Instagram post links (public ones)
 - Displays `.webp` images inline
+- Displays `.avif` images inline
 - Embeds `.mp4` video players
 - Works even when content is dynamically loaded (MutationObserver)
 
