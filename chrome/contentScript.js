@@ -1,11 +1,52 @@
-// Add embedder style
+// Default settings
+const DEFAULT_SETTINGS = {
+  enableBorder: true,
+  borderColor: '#E685D5',
+  borderWidth: 2
+};
+
+// Current settings (will be loaded from storage)
+let currentSettings = { ...DEFAULT_SETTINGS };
+
+// Create style element
 const style = document.createElement('style');
-style.textContent = `
-  .panopticon-embedder-frame {
-    border: 2px solid #E685D5 !important;
-  }
-`;
 document.head.appendChild(style);
+
+// Load settings and apply styles
+function loadSettings() {
+  chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
+    currentSettings = settings;
+    updateStyles();
+  });
+}
+
+// Update CSS based on current settings
+function updateStyles() {
+  if (currentSettings.enableBorder) {
+    style.textContent = `
+      .panopticon-embedder-frame {
+        border: ${currentSettings.borderWidth}px solid ${currentSettings.borderColor} !important;
+      }
+    `;
+  } else {
+    style.textContent = `
+      .panopticon-embedder-frame {
+        border: none !important;
+      }
+    `;
+  }
+}
+
+// Listen for settings updates
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'settingsUpdated') {
+    currentSettings = message.settings;
+    updateStyles();
+  }
+});
+
+// Load settings on startup
+loadSettings();
 
 // Initial run in case some content is already loaded
 processLinks(document);

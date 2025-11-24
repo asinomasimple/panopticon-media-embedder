@@ -5,7 +5,8 @@
   "description": "Enhance QBN posts by embedding Instagram, webp images, and more.",
   "permissions": [
     "scripting",
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "host_permissions": [
     "*://*.qbn.com/*"
@@ -20,6 +21,7 @@
       ]
     }
   ],
+  "options_page": "options.html",
   "icons": {
     "16": "icons/icon32.png",
     "32": "icons/icon32.png",
